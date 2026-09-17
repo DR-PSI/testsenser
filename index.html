@@ -160,7 +160,7 @@
     <div class="card">
       <div class="row" style="margin-bottom:12px;">
         <label style="min-width:70px;">เพิ่มห้อง</label>
-        <input type="text" id="dashAddCompany" placeholder="PLANT" value="tinamics" style="max-width:140px;">
+        <input type="text" id="dashAddCompany" placeholder="PLANT" value="ABC" style="max-width:140px;">
         <input type="text" id="dashAddRoom" placeholder="room id" style="max-width:100px;">
         <button class="btn secondary" id="dashAddBtn">+ เพิ่ม</button>
       </div>
@@ -190,7 +190,7 @@
       <h2>Firestore Explorer</h2>
       <div class="row"><label>Project ID</label><input type="text" id="fsProject" value="motoreye-b8829"></div>
       <div class="row"><label>Document path</label>
-        <input type="text" id="fsPath" value="plants/tinamics/rooms/888" placeholder="collection/doc/collection/doc">
+        <input type="text" id="fsPath" value="plants/ABC/rooms/888" placeholder="collection/doc/collection/doc">
       </div>
       <div class="row">
         <button class="btn" id="fsReadBtn">อ่านครั้งเดียว</button>
@@ -698,7 +698,7 @@ function loadWatchList(){
     const raw = localStorage.getItem(WATCH_KEY);
     if (raw) { const arr = JSON.parse(raw); if (Array.isArray(arr) && arr.length) return arr; }
   } catch(_) {}
-  return [{ company:'tinamics', room:'888' }];
+  return [{ company:'ABC', room:'888' }];
 }
 function saveWatchList(){
   try { localStorage.setItem(WATCH_KEY, JSON.stringify(Object.keys(rooms).map(k => rooms[k].meta))); } catch(_) {}
@@ -889,7 +889,7 @@ document.getElementById('dashAddBtn').onclick = () => {
   document.getElementById('dashAddRoom').value = '';
 };
 
-// โหลดรายการห้องที่เคยเพิ่มไว้ (หรือค่าเริ่มต้น tinamics/888)
+// โหลดรายการห้องที่เคยเพิ่มไว้ (หรือค่าเริ่มต้น ABC/888)
 try {
   loadWatchList().forEach(m => addRoom(m.company, m.room));
 } catch (e) {
