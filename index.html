@@ -34,6 +34,27 @@
   .subtitle{ margin:4px 0 0; font-family:var(--font-mono); font-size:11px; letter-spacing:0.5px;
              color:var(--text-faint); text-transform:uppercase; }
 
+  .dot{ width:8px; height:8px; border-radius:50%; background:var(--text-faint); flex-shrink:0; display:inline-block; }
+  .dot.ok{ background:var(--green); }
+  .dot.warn{ background:var(--amber); }
+  .dot.crit{ background:var(--red); }
+  .dot.off{ background:var(--text-faint); }
+
+  /* status legend */
+  .status-row{ display:flex; gap:10px; flex-wrap:wrap; }
+  .status-pill{ display:inline-flex; align-items:center; gap:8px; font-size:13px; font-weight:500;
+                border-radius:20px; padding:7px 14px 7px 12px; border:1px solid transparent; }
+  .status-pill b{ font-weight:700; font-family:var(--font-mono); font-size:13px; margin-left:1px; }
+  .status-pill.ok{ background:#eaf7ed; color:#1c7a37; border-color:#cdead4; }
+  .status-pill.warn{ background:#fdf3e0; color:#a86a00; border-color:#f5e0b3; }
+  .status-pill.crit{ background:var(--red-tint); color:var(--red); border-color:#f3c6c1; }
+  .status-pill.off{ background:#f2f0ec; color:var(--text-dim); border-color:var(--border); }
+  .status-pill .dot{ width:7px; height:7px; }
+  .status-pill.ok .dot{ background:#1c7a37; }
+  .status-pill.warn .dot{ background:#a86a00; }
+  .status-pill.crit .dot{ background:var(--red); }
+  .status-pill.off .dot{ background:var(--text-faint); }
+
   /* tabs */
   .tabs{ display:flex; gap:4px; border-bottom:1px solid var(--border); margin-bottom:20px; overflow-x:auto; }
   .tab-btn{ font-family:var(--font-sans); font-size:13.5px; font-weight:500; color:var(--text-dim);
@@ -139,15 +160,15 @@
     <div class="card">
       <div class="row" style="margin-bottom:12px;">
         <label style="min-width:70px;">เพิ่มห้อง</label>
-        <input type="text" id="dashAddCompany" placeholder="company" value="tinamics" style="max-width:140px;">
+        <input type="text" id="dashAddCompany" placeholder="PLANT" value="tinamics" style="max-width:140px;">
         <input type="text" id="dashAddRoom" placeholder="room id" style="max-width:100px;">
         <button class="btn secondary" id="dashAddBtn">+ เพิ่ม</button>
       </div>
       <div class="status-row" id="dashStatusRow" style="margin-bottom:0;">
-        <span class="status-pill"><span class="dot ok"></span>ปกติ <b id="cntOk">0</b></span>
-        <span class="status-pill"><span class="dot warn"></span>เฝ้าระวัง <b id="cntWarn">0</b></span>
-        <span class="status-pill"><span class="dot crit"></span>ผิดเกณฑ์ <b id="cntCrit">0</b></span>
-        <span class="status-pill"><span class="dot off"></span>ออฟไลน์ <b id="cntOff">0</b></span>
+        <span class="status-pill ok"><span class="dot ok"></span>ปกติ<b id="cntOk">0</b></span>
+        <span class="status-pill warn"><span class="dot warn"></span>เฝ้าระวัง<b id="cntWarn">0</b></span>
+        <span class="status-pill crit"><span class="dot crit"></span>ผิดเกณฑ์<b id="cntCrit">0</b></span>
+        <span class="status-pill off"><span class="dot off"></span>ออฟไลน์<b id="cntOff">0</b></span>
       </div>
     </div>
 
@@ -169,7 +190,7 @@
       <h2>Firestore Explorer</h2>
       <div class="row"><label>Project ID</label><input type="text" id="fsProject" value="motoreye-b8829"></div>
       <div class="row"><label>Document path</label>
-        <input type="text" id="fsPath" value="companies/tinamics/rooms/888" placeholder="collection/doc/collection/doc">
+        <input type="text" id="fsPath" value="plants/tinamics/rooms/888" placeholder="collection/doc/collection/doc">
       </div>
       <div class="row">
         <button class="btn" id="fsReadBtn">อ่านครั้งเดียว</button>
@@ -801,7 +822,7 @@ function addRoom(company, room){
   });
 
   const db = ensureFsApp();
-  const unsubLive = db.collection('companies').doc(company).collection('rooms').doc(room).onSnapshot(
+  const unsubLive = db.collection('plants').doc(company).collection('rooms').doc(room).onSnapshot(
     (snap) => {
       if (!snap.exists) { el.querySelector('.room-signal').textContent = 'ยังไม่พบเอกสาร'; return; }
       const data = snap.data();
@@ -810,7 +831,7 @@ function addRoom(company, room){
     },
     (err) => { el.querySelector('.room-signal').textContent = 'error: ' + err.code; }
   );
-  const unsubSpark = db.collection('companies').doc(company).collection('rooms').doc(room)
+  const unsubSpark = db.collection('plants').doc(company).collection('rooms').doc(room)
     .collection('readings').orderBy('ts','desc').limit(20).onSnapshot((snap) => {
       const rows = []; snap.forEach(d => rows.push(d.data())); rows.reverse();
       sparkChart.data.labels = rows.map((_,i) => i);
@@ -883,7 +904,7 @@ function selectRoom(key){
 
   if (dashHistUnsub) dashHistUnsub();
   const db = ensureFsApp();
-  dashHistUnsub = db.collection('companies').doc(r.meta.company).collection('rooms').doc(r.meta.room)
+  dashHistUnsub = db.collection('plants').doc(r.meta.company).collection('rooms').doc(r.meta.room)
     .collection('readings').orderBy('ts','desc').limit(60).onSnapshot(
       (snap) => {
         const rows = []; snap.forEach(d => rows.push(d.data())); rows.reverse();
